@@ -1,0 +1,27 @@
+{
+  "name": "quiz-platform-backend",
+  "version": "1.0.0",
+  "description": "Quiz platform backend API",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "seed:admin": "node scripts/seedAdmin.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "cors": "^2.8.6",
+    "dotenv": "^16.5.0",
+    "express": "^5.2.1",
+    "express-validator": "^7.2.1",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.15.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.10"
+  }
+}
