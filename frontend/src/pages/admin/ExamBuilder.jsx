@@ -131,10 +131,15 @@ export default function ExamBuilder() {
               </div>
             </form>
           ) : (
-            <div className="cursor-pointer group" onClick={() => setEditingMeta(true)} id="exam-meta-display">
-              <h1 className="text-lg sm:text-xl lg:text-2xl font-bold tracking-tight group-hover:text-white/80 transition-colors">{exam.title}</h1>
-              {exam.description && <p className="text-white/35 text-xs sm:text-sm mt-1">{exam.description}</p>}
-              <p className="text-white/25 text-[10px] sm:text-[11px] mt-2 font-mono uppercase tracking-widest">{exam.durationMinutes} minutes · Click to edit</p>
+            <div className="flex items-start justify-between gap-4 group" id="exam-meta-display">
+              <div>
+                <h1 className="text-lg sm:text-xl lg:text-2xl font-bold tracking-tight">{exam.title}</h1>
+                {exam.description && <p className="text-white/35 text-xs sm:text-sm mt-1">{exam.description}</p>}
+                <p className="text-white/25 text-[10px] sm:text-[11px] mt-2 font-mono uppercase tracking-widest">{exam.durationMinutes} minutes</p>
+              </div>
+              <button onClick={() => setEditingMeta(true)} className="flex items-center gap-1.5 px-3 py-1.5 border border-white/10 hover:border-purple-400/30 text-white/40 hover:text-purple-300 transition-all rounded-sm text-[11px] font-mono uppercase tracking-widest shrink-0">
+                <Edit size={12} /> Edit Details
+              </button>
             </div>
           )}
         </div>
