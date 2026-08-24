@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { Clock } from 'lucide-react';
 
 export default function Timer({ durationMinutes, startedAt, onTimeUp }) {
   const [secondsLeft, setSecondsLeft] = useState(() => {
@@ -44,22 +43,15 @@ export default function Timer({ durationMinutes, startedAt, onTimeUp }) {
   }, [minutes, seconds]);
 
   return (
-    <div
-      className={`flex flex-col items-center justify-center border-l border-b border-white/10 bg-[#050505] px-6 py-2 min-w-[140px] ${
-        isUrgent ? 'animate-pulse-border border-white/40' : ''
-      }`}
+    <span
+      className="font-mono font-bold"
+      style={{
+        color: isUrgent ? '#ba1a1a' : 'inherit',
+        fontSize: 'inherit',
+      }}
       id="exam-timer"
     >
-      <span className="text-[10px] font-bold tracking-widest text-white/50 uppercase mb-0.5">
-        Time Remaining
-      </span>
-      <span
-        className={`font-mono text-3xl font-bold tracking-wider ${
-          isUrgent ? 'text-white' : 'text-white'
-        }`}
-      >
-        {formatTime()}
-      </span>
-    </div>
+      {formatTime()}
+    </span>
   );
 }

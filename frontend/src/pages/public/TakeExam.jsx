@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ChevronLeft, ChevronRight, Send } from 'lucide-react';
+import { ChevronLeft, ArrowRight, Send, X, Clock } from 'lucide-react';
 import api from '../../lib/axios';
 import useExamStore from '../../store/examStore';
 import Timer from '../../components/Timer';
@@ -70,53 +70,67 @@ export default function TakeExam() {
   const answeredCount = Object.keys(answers).length;
 
   return (
-    <PageLayout>
-      {/* Top Navigation */}
-      <header className="flex flex-col sm:flex-row justify-between items-stretch border-b border-white/10 bg-[#050505]/90 backdrop-blur-md sticky top-0 z-30">
-        <div className="py-3 sm:py-4 px-4 sm:px-8 flex items-center justify-between sm:justify-start">
-          <span className="font-bold text-lg sm:text-xl tracking-tight text-white">.computer Quiz</span>
-          <span className="sm:hidden text-purple-300/50 text-[10px] font-mono uppercase tracking-widest">
-            {currentQuestionIndex + 1}/{totalQuestions}
-          </span>
-          <span className="hidden sm:inline-block text-white/40 ml-3 text-xs sm:text-sm tracking-wide border-l border-white/10 pl-3">
-            Advanced Cognitive Assessment
-          </span>
-        </div>
-        <Timer
-          durationMinutes={exam.durationMinutes}
-          startedAt={startedAt}
-          onTimeUp={handleTimeUp}
-        />
-      </header>
-
-      {/* Main Content — centered */}
-      <main className="flex-1 w-full max-w-4xl mx-auto px-4 sm:px-8 py-6 sm:py-10 lg:py-12">
-        {/* Question Header */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-6 sm:mb-8 pb-3 sm:pb-4 border-b border-white/10 gap-3 sm:gap-4">
+    <div className="min-h-screen flex flex-col" style={{ backgroundColor: '#f9f9f9', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+      {/* Top bar */}
+      <header className="flex items-center justify-between border-b"
+              style={{ backgroundColor: '#ffffff', borderColor: '#e2e2e2', padding: '16px 24px', position: 'sticky', top: 0, zIndex: 30 }}>
+        <div className="flex items-center gap-4">
+          <button onClick={() => setShowConfirm(true)} className="transition-colors duration-300"
+                  style={{ color: '#42474f' }}
+                  onMouseEnter={(e) => { e.currentTarget.style.color = '#1b1b1b'; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.color = '#42474f'; }}>
+            <X size={20} />
+          </button>
           <div>
-            <h1 className="text-lg sm:text-xl lg:text-2xl font-bold tracking-tight text-white/90 leading-snug">
-              {exam.title}
-            </h1>
-            <p className="text-purple-300/40 text-[11px] sm:text-xs mt-1.5 sm:mt-2 font-mono uppercase tracking-wider">
-              Question {currentQuestionIndex + 1} of {totalQuestions}
-            </p>
+            <h2 className="font-bold" style={{ fontSize: '18px', color: '#1b1b1b' }}>{exam.title}</h2>
+            <p style={{ fontSize: '13px', color: '#727780' }}>Module Assessment</p>
+          </div>
+        </div>
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 rounded-full"
+               style={{ backgroundColor: '#f3f3f3', padding: '8px 16px', color: '#42474f', fontSize: '14px', fontWeight: 600 }}>
+            <Clock size={16} />
+            <Timer durationMinutes={exam.durationMinutes} startedAt={startedAt} onTimeUp={handleTimeUp} />
           </div>
           <button
-            className="text-white/40 hover:text-purple-300 flex items-center gap-2 text-[10px] sm:text-[11px] transition-colors uppercase tracking-widest font-mono"
-            onClick={() => {}}
+            onClick={() => setShowConfirm(true)}
+            disabled={disabled || submitting}
+            className="text-white text-sm font-semibold transition-all duration-300 hover:-translate-y-0.5 disabled:opacity-50"
+            style={{ backgroundColor: '#5682B1', borderRadius: '16px', padding: '10px 20px' }}
+            onMouseEnter={(e) => { if (!e.currentTarget.disabled) e.currentTarget.style.backgroundColor = '#739EC9'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#5682B1'; }}
+            id="submit-exam-btn"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path><line x1="4" y1="22" x2="4" y2="15"></line></svg>
-            Flag for review
+            Submit Exam
           </button>
         </div>
+      </header>
 
-        {/* Question Text */}
-        <div className="mb-8 sm:mb-10 text-sm sm:text-[15px] lg:text-base leading-relaxed text-white/80">
-          <p>{currentQuestion.questionText}</p>
+      {/* Main content */}
+      <main className="flex-1 w-full flex justify-center" style={{ padding: '48px 24px' }}>
+        <div className="w-full max-w-4xl">
+          {/* Question number */}
+        <div style={{ marginBottom: '8px' }}>
+          <h1 style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', fontSize: '40px', lineHeight: '48px', fontWeight: 700, letterSpacing: '-0.02em', color: '#1b1b1b' }}>
+            <span>Question {String(currentQuestionIndex + 1).padStart(2, '0')}</span>
+            <span style={{ color: '#c2c7d0', fontWeight: 400, fontSize: '20px', marginLeft: '4px' }}>/ {totalQuestions}</span>
+          </h1>
         </div>
 
-        {/* Options List */}
-        <div className="space-y-2.5 sm:space-y-3 mb-8 sm:mb-12">
+        {/* Progress bar */}
+        <div className="w-full rounded-full overflow-hidden" style={{ height: '4px', backgroundColor: '#e2e2e2', marginBottom: '48px' }}>
+          <div className="h-full rounded-full transition-all duration-500" style={{ width: `${((currentQuestionIndex + 1) / totalQuestions) * 100}%`, backgroundColor: '#5682B1' }} />
+        </div>
+
+        {/* Question card */}
+        <div className="rounded-2xl" style={{ backgroundColor: '#ffffff', border: '1px solid #e2e2e2', padding: '32px', marginBottom: '48px' }}>
+          <p style={{ fontSize: '18px', lineHeight: '28px', fontWeight: 500, color: '#1b1b1b' }}>
+            {currentQuestion.questionText}
+          </p>
+        </div>
+
+        {/* Options */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '64px' }}>
           {currentQuestion.options.map((option, optIdx) => {
             const letter = String.fromCharCode(65 + optIdx);
             const isSelected = answers[currentQuestion._id] === optIdx;
@@ -125,97 +139,75 @@ export default function TakeExam() {
                 key={optIdx}
                 onClick={() => !disabled && setAnswer(currentQuestion._id, optIdx)}
                 disabled={disabled}
-                className={`w-full text-left px-4 sm:px-5 py-3 sm:py-4 border transition-all duration-200 flex items-center gap-3 sm:gap-4 group rounded-sm disabled:cursor-not-allowed ${
-                  isSelected
-                    ? 'border-purple-400/60 bg-purple-500/10 text-white shadow-[0_0_20px_rgba(139,92,246,0.08)]'
-                    : 'border-white/10 text-white/60 hover:border-purple-400/30 hover:bg-white/[0.03] hover:text-white/90'
-                }`}
-                id={`option-${currentQuestion._id}-${optIdx}`}
+                className="w-full text-left flex items-center gap-4 rounded-2xl border transition-all duration-200 disabled:cursor-not-allowed"
+                style={{
+                  backgroundColor: isSelected ? 'rgba(86,130,177,0.08)' : '#ffffff',
+                  borderColor: isSelected ? '#5682B1' : '#e2e2e2',
+                  borderWidth: isSelected ? '2px' : '1px',
+                  padding: isSelected ? '15px 23px' : '16px 24px',
+                  boxShadow: isSelected ? '0 2px 8px rgba(86,130,177,0.12)' : 'none',
+                }}
               >
-                <span
-                  className={`w-6 h-6 sm:w-7 sm:h-7 flex items-center justify-center font-mono text-xs sm:text-sm transition-colors rounded-sm shrink-0 ${
-                    isSelected
-                      ? 'bg-purple-500 text-white font-semibold'
-                      : 'bg-transparent text-white/30 group-hover:text-white/60'
-                  }`}
-                >
+                <span className="flex items-center justify-center shrink-0 font-bold text-sm rounded-full"
+                      style={{
+                        width: '36px', height: '36px',
+                        backgroundColor: isSelected ? '#5682B1' : '#f3f3f3',
+                        color: isSelected ? '#ffffff' : '#42474f',
+                      }}>
                   {letter}
                 </span>
-                <span className="text-xs sm:text-sm lg:text-[15px]">{option}</span>
+                <span style={{ fontSize: '16px', lineHeight: '24px', color: '#1b1b1b' }}>
+                  {option}
+                </span>
               </button>
             );
           })}
+          </div>
         </div>
       </main>
 
-      {/* Bottom Navigation */}
-      <footer className="border-t border-white/10 bg-[#050505]/90 backdrop-blur-md py-3 sm:py-4 px-4 sm:px-8 flex justify-between items-center sticky bottom-0 z-30">
-        <button
-          onClick={() => setCurrentQuestionIndex(Math.max(0, currentQuestionIndex - 1))}
-          disabled={currentQuestionIndex === 0 || disabled}
-          className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 text-[10px] sm:text-xs font-mono tracking-widest text-white/50 hover:text-white uppercase transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
-          id="prev-question-btn"
-        >
-          <ChevronLeft size={14} strokeWidth={2.5} />
-          <span className="hidden sm:inline">Previous</span>
-        </button>
-
-        <div className="flex gap-1 sm:gap-1.5">
-          {questions.map((q, idx) => {
-            const isAnswered = answers[q._id] !== undefined;
-            const isCurrent = idx === currentQuestionIndex;
-            return (
-              <button
-                key={q._id}
-                onClick={() => !disabled && setCurrentQuestionIndex(idx)}
-                className={`w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full transition-all duration-300 ${
-                  isCurrent
-                    ? 'bg-purple-400 scale-125'
-                    : isAnswered
-                    ? 'bg-purple-400/40'
-                    : 'bg-white/10'
-                }`}
-              />
-            );
-          })}
-        </div>
-
-        {currentQuestionIndex < totalQuestions - 1 ? (
+      {/* Bottom navigation */}
+      <footer className="border-t flex justify-center" style={{ backgroundColor: '#ffffff', borderColor: '#e2e2e2', padding: '20px 24px', position: 'sticky', bottom: 0, zIndex: 30 }}>
+        <div className="w-full max-w-4xl flex justify-between items-center">
           <button
-            onClick={() => setCurrentQuestionIndex(currentQuestionIndex + 1)}
+            onClick={() => setCurrentQuestionIndex(Math.max(0, currentQuestionIndex - 1))}
+            disabled={currentQuestionIndex === 0 || disabled}
+            className="flex items-center gap-2 text-sm font-semibold transition-colors duration-300 disabled:opacity-30 disabled:cursor-not-allowed"
+            style={{ color: '#42474f' }}
+            id="prev-question-btn"
+          >
+            <ChevronLeft size={18} />
+            Previous
+          </button>
+
+          <button
+            onClick={() => {
+              if (currentQuestionIndex < totalQuestions - 1) {
+                setCurrentQuestionIndex(currentQuestionIndex + 1);
+              } else {
+                setShowConfirm(true);
+              }
+            }}
             disabled={disabled}
-            className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-6 py-2 sm:py-2.5 text-[10px] sm:text-xs font-mono font-semibold tracking-widest bg-gradient-to-r from-purple-600 to-purple-500 text-white hover:from-purple-500 hover:to-purple-400 uppercase transition-all disabled:opacity-50 disabled:cursor-not-allowed rounded-sm"
+            className="flex items-center gap-2 text-sm font-semibold transition-all duration-300 hover:-translate-y-0.5 disabled:opacity-50"
+            style={{ color: '#5682B1' }}
             id="next-question-btn"
           >
-            <span className="hidden sm:inline">Next</span>
-            <ChevronRight size={14} strokeWidth={2.5} />
+            {currentQuestionIndex < totalQuestions - 1 ? 'Next Question' : 'Submit Exam'}
+            <ArrowRight size={18} />
           </button>
-        ) : (
-          <button
-            onClick={() => setShowConfirm(true)}
-            disabled={disabled || submitting}
-            className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-6 py-2 sm:py-2.5 text-[10px] sm:text-xs font-mono font-semibold tracking-widest bg-gradient-to-r from-purple-600 to-purple-500 text-white hover:from-purple-500 hover:to-purple-400 uppercase transition-all disabled:opacity-50 disabled:cursor-not-allowed rounded-sm"
-            id="submit-exam-btn"
-          >
-            {submitting ? 'Sending...' : 'Submit'}
-            <Send size={12} strokeWidth={2.5} />
-          </button>
-        )}
+        </div>
       </footer>
 
       <ConfirmModal
-        isOpen={showConfirm}
-        title="Final Submission"
-        message={
-          answeredCount < totalQuestions
-            ? `Warning: You have only completed ${answeredCount} out of ${totalQuestions} questions. Any unanswered questions will be marked as incorrect.`
-            : "You have completed all questions. Are you ready to submit your final answers?"
-        }
-        confirmText="Confirm Submission"
-        cancelText="Return to Assessment"
+        isOpen={showConfirm} title="Final Submission"
+        message={answeredCount < totalQuestions
+          ? `You have completed ${answeredCount} out of ${totalQuestions} questions. Unanswered questions will be marked incorrect.`
+          : "You have completed all questions. Ready to submit your final answers?"}
+        confirmText="Confirm Submission" cancelText="Return to Assessment"
         onConfirm={() => { setShowConfirm(false); submitExam(false); }}
         onCancel={() => setShowConfirm(false)}
       />
-    </PageLayout>
+    </div>
   );
 }

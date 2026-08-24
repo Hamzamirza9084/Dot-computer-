@@ -1,11 +1,14 @@
 import { Router } from 'express';
 import { body, param } from 'express-validator';
+import multer from 'multer';
+import { parse } from 'csv-parse/sync';
 import Exam from '../models/Exam.js';
 import Question from '../models/Question.js';
 import Attempt from '../models/Attempt.js';
 import validate from '../middleware/validate.js';
 
 const router = Router();
+const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 2 * 1024 * 1024 } });
 
 // ========================
 // EXAM CRUD
@@ -339,6 +342,107 @@ router.delete(
       res.json({
         success: true,
         data: { message: 'Question deleted.' },
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+// ========================
+// CSV BULK UPLOAD
+// ========================
+
+// GET /api/admin/exams/csv-template — download demo CSV
+router.get('/exams/csv-template', (req, res) => {
+  const csvContent = [
+    'question,optionA,optionB,optionC,optionD,correctOption',
+    'What is React primarily used for?,Database management,Building user interfaces,Server-side networking,Operating system development,B',
+    'Which hook is used for side effects in React?,useState,useEffect,useContext,useReducer,B',
+    'What does JSX stand for?,JavaScript XML,JavaScript Extension,Java Syntax Extension,JSON XML Schema,A',
+  ].join('\n');
+
+  res.setHeader('Content-Type', 'text/csv');
+  res.setHeader('Content-Disposition', 'attachment; filename="quiz_template.csv"');
+  res.send(csvContent);
+});
+
+// POST /api/admin/exams/:id/questions/csv — bulk upload from CSV
+router.post(
+  '/exams/:id/questions/csv',
+  [param('id').isMongoId().withMessage('Invalid exam ID')],
+  validate,
+  upload.single('csv'),
+  async (req, res, next) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ success: false, message: 'No CSV file uploaded.' });
+      }
+
+      const exam = await Exam.findById(req.params.id);
+      if (!exam) {
+        return res.status(404).json({ success: false, message: 'Exam not found.' });
+      }
+
+      const csvText = req.file.buffer.toString('utf-8');
+      let records;
+      try {
+        records = parse(csvText, {
+          columns: true,
+          skip_empty_lines: true,
+          trim: true,
+          bom: true,
+        });
+      } catch (parseErr) {
+        return res.status(400).json({ success: false, message: 'Invalid CSV format. ' + parseErr.message });
+      }
+
+      if (records.length === 0) {
+        return res.status(400).json({ success: false, message: 'CSV file is empty (no data rows found).' });
+      }
+
+      const errors = [];
+      const questionsToCreate = [];
+      const letterMap = { A: 0, B: 1, C: 2, D: 3 };
+
+      records.forEach((row, idx) => {
+        const rowNum = idx + 2; // +2 because row 1 is header
+        const q = row.question || row.Question || row.QUESTION || '';
+        const optA = row.optionA || row.OptionA || row.OPTIONA || row.option_a || '';
+        const optB = row.optionB || row.OptionB || row.OPTIONB || row.option_b || '';
+        const optC = row.optionC || row.OptionC || row.OPTIONC || row.option_c || '';
+        const optD = row.optionD || row.OptionD || row.OPTIOND || row.option_d || '';
+        const correct = (row.correctOption || row.CorrectOption || row.CORRECTOPTION || row.correct_option || '').toUpperCase().trim();
+
+        if (!q) { errors.push(`Row ${rowNum}: Missing question text.`); return; }
+        if (!optA || !optB || !optC || !optD) { errors.push(`Row ${rowNum}: All four options (A-D) are required.`); return; }
+        if (!letterMap.hasOwnProperty(correct)) { errors.push(`Row ${rowNum}: correctOption must be A, B, C, or D (got "${correct}").`); return; }
+
+        questionsToCreate.push({
+          examId: exam._id,
+          questionText: q,
+          options: [optA, optB, optC, optD],
+          correctOptionIndex: letterMap[correct],
+          order: exam.questions.length + questionsToCreate.length,
+        });
+      });
+
+      if (errors.length > 0 && questionsToCreate.length === 0) {
+        return res.status(400).json({ success: false, message: 'All rows had errors.', errors });
+      }
+
+      const created = await Question.insertMany(questionsToCreate);
+      const newIds = created.map((q) => q._id);
+      exam.questions.push(...newIds);
+      await exam.save();
+
+      res.status(201).json({
+        success: true,
+        data: {
+          added: created.length,
+          total: exam.questions.length,
+          errors: errors.length > 0 ? errors : undefined,
+        },
       });
     } catch (error) {
       next(error);

@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { ArrowLeft, AlertCircle } from 'lucide-react';
 import api from '../../lib/axios';
-import PageLayout from '../../components/PageLayout';
 
 export default function ExamAttempts() {
   const { id } = useParams();
@@ -26,79 +25,90 @@ export default function ExamAttempts() {
   }, [id]);
 
   const formatDate = (dateStr) => {
-    if (!dateStr) return '—';
+    if (!dateStr) return '--';
     return new Date(dateStr).toLocaleString('en-US', {
       month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit',
     });
   };
 
   return (
-    <PageLayout>
-      <nav className="border-b border-white/10 sticky top-0 z-30 bg-[#050505]/80 backdrop-blur-md">
-        <div className="max-w-6xl mx-auto px-4 sm:px-8 py-4 sm:py-5 flex items-center justify-between">
-          <div className="flex items-center gap-2 sm:gap-3">
-            <Link to="/admin/dashboard" className="font-bold text-lg sm:text-2xl tracking-tight text-white">.computer Quiz</Link>
-            <span className="hidden sm:inline-block text-purple-300/40 text-xs font-mono uppercase tracking-widest border-l border-white/10 pl-3">Attempts</span>
+    <div className="min-h-screen flex flex-col" style={{ backgroundColor: '#f9f9f9', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+      <nav className="border-b flex justify-center" style={{ backgroundColor: '#ffffff', borderColor: '#e2e2e2', padding: '16px 24px', position: 'sticky', top: 0, zIndex: 30 }}>
+        <div className="w-full max-w-5xl flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <Link to="/admin/dashboard" className="font-extrabold text-xl tracking-tight" style={{ color: '#1b1b1b' }}>
+              .computer<span style={{ color: '#5682B1' }}>Quiz</span>
+            </Link>
+            <span className="hidden sm:inline text-xs font-semibold border-l" style={{ color: '#727780', borderColor: '#e2e2e2', paddingLeft: '12px' }}>Attempts</span>
           </div>
           <button onClick={() => navigate('/admin/dashboard')}
-            className="flex items-center gap-1.5 sm:gap-2 text-[11px] sm:text-xs font-mono tracking-widest uppercase text-white/40 hover:text-white transition-colors"
+            className="flex items-center gap-2 text-sm font-semibold transition-colors duration-300"
+            style={{ color: '#727780', padding: '8px 16px', borderRadius: '10px', border: '1px solid #e2e2e2' }}
+            onMouseEnter={(e) => { e.currentTarget.style.borderColor = '#5682B1'; e.currentTarget.style.color = '#5682B1'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.borderColor = '#e2e2e2'; e.currentTarget.style.color = '#727780'; }}
             id="back-to-dashboard">
-            <ArrowLeft size={14} /> <span className="hidden sm:inline">Dashboard</span>
+            <ArrowLeft size={14} /> Dashboard
           </button>
         </div>
       </nav>
 
-      <main className="flex-1 max-w-6xl mx-auto px-4 sm:px-8 py-6 sm:py-10 w-full">
-        <div className="mb-6 sm:mb-8 pb-3 sm:pb-4 border-b border-white/10">
-          <h1 className="text-base sm:text-lg font-bold tracking-tight">Attempt History</h1>
-          {data?.exam && <p className="text-purple-300/40 text-[11px] sm:text-xs font-mono mt-1 uppercase tracking-widest">{data.exam.title}</p>}
+      <main className="flex-1 w-full flex justify-center px-6" style={{ paddingTop: '32px', paddingBottom: '32px' }}>
+        <div className="w-full max-w-5xl">
+        <div className="border-b" style={{ borderColor: '#e2e2e2', paddingBottom: '20px', marginBottom: '24px' }}>
+          <h1 className="font-bold" style={{ fontSize: '28px', color: '#1b1b1b' }}>Attempt History</h1>
+          {data?.exam && <p className="text-sm" style={{ color: '#727780', marginTop: '4px' }}>{data.exam.title}</p>}
         </div>
 
         {error && (
-          <div className="flex items-center gap-3 p-3 sm:p-4 mb-6 border border-red-500/20 bg-red-500/5 text-red-300/80 text-xs sm:text-sm rounded-sm">
+          <div className="flex items-center gap-3 rounded-xl" style={{ padding: '14px 16px', marginBottom: '20px', backgroundColor: 'rgba(186,26,26,0.06)', border: '1px solid rgba(186,26,26,0.15)', color: '#ba1a1a', fontSize: '14px' }}>
             <AlertCircle size={16} className="shrink-0" /><span>{error}</span>
           </div>
         )}
 
         {loading ? (
-          <div className="text-center text-white/30 py-16 sm:py-20 font-mono text-sm uppercase tracking-widest">Loading...</div>
+          <div className="text-center text-sm" style={{ color: '#727780', paddingTop: '80px' }}>Loading...</div>
         ) : !data?.attempts || data.attempts.length === 0 ? (
-          <div className="text-center py-16 sm:py-20 border border-dashed border-white/10 rounded-sm">
-            <p className="text-white/30 text-[11px] sm:text-xs font-mono uppercase tracking-widest">No attempts recorded yet</p>
+          <div className="text-center rounded-2xl" style={{ paddingTop: '80px', paddingBottom: '80px', border: '1px dashed #e2e2e2' }}>
+            <p className="text-sm" style={{ color: '#727780' }}>No attempts recorded yet</p>
           </div>
         ) : (
           <>
-            <p className="text-white/30 text-[10px] sm:text-[11px] font-mono mb-4 sm:mb-5 uppercase tracking-widest">
+            <p className="text-sm" style={{ color: '#727780', marginBottom: '20px' }}>
               {data.attempts.length} attempt{data.attempts.length !== 1 ? 's' : ''} recorded
             </p>
 
-            {/* Desktop table */}
-            <div className="hidden sm:block border border-white/10 overflow-hidden rounded-sm">
-              <table className="w-full text-sm" id="attempts-table">
+            {/* Table */}
+            <div className="hidden sm:block rounded-2xl overflow-hidden" style={{ backgroundColor: '#ffffff', border: '1px solid #e2e2e2' }} id="attempts-table">
+              <table className="w-full text-sm">
                 <thead>
-                  <tr className="border-b border-white/10 bg-white/[0.02]">
-                    <th className="text-left px-5 py-3 text-[11px] font-mono font-normal text-white/40 uppercase tracking-widest">Name</th>
-                    <th className="text-left px-5 py-3 text-[11px] font-mono font-normal text-white/40 uppercase tracking-widest">Score</th>
-                    <th className="text-left px-5 py-3 text-[11px] font-mono font-normal text-white/40 uppercase tracking-widest">Started</th>
-                    <th className="text-left px-5 py-3 text-[11px] font-mono font-normal text-white/40 uppercase tracking-widest">Submitted</th>
-                    <th className="text-left px-5 py-3 text-[11px] font-mono font-normal text-white/40 uppercase tracking-widest">Type</th>
+                  <tr style={{ borderBottom: '1px solid #e2e2e2' }}>
+                    <th className="text-left font-semibold" style={{ padding: '14px 20px', color: '#727780', fontSize: '12px', letterSpacing: '0.05em', textTransform: 'uppercase' }}>Name</th>
+                    <th className="text-left font-semibold" style={{ padding: '14px 20px', color: '#727780', fontSize: '12px', letterSpacing: '0.05em', textTransform: 'uppercase' }}>Score</th>
+                    <th className="text-left font-semibold" style={{ padding: '14px 20px', color: '#727780', fontSize: '12px', letterSpacing: '0.05em', textTransform: 'uppercase' }}>Started</th>
+                    <th className="text-left font-semibold" style={{ padding: '14px 20px', color: '#727780', fontSize: '12px', letterSpacing: '0.05em', textTransform: 'uppercase' }}>Submitted</th>
+                    <th className="text-left font-semibold" style={{ padding: '14px 20px', color: '#727780', fontSize: '12px', letterSpacing: '0.05em', textTransform: 'uppercase' }}>Type</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {data.attempts.map((attempt) => (
-                    <tr key={attempt._id} className="border-b border-white/5 last:border-0 hover:bg-white/[0.02] transition-colors">
-                      <td className="px-5 py-4 text-white font-medium">{attempt.userName}</td>
-                      <td className="px-5 py-4 text-purple-300/60 font-mono">
-                        {attempt.score !== null ? `${attempt.score} / ${attempt.totalQuestions}` : '—'}
+                  {data.attempts.map((attempt, idx) => (
+                    <tr key={attempt._id}
+                        style={{ borderBottom: idx < data.attempts.length - 1 ? '1px solid #f3f3f3' : 'none' }}
+                        onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#fafafa'; }}
+                        onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#ffffff'; }}>
+                      <td className="font-semibold" style={{ padding: '14px 20px', color: '#1b1b1b' }}>{attempt.userName}</td>
+                      <td className="font-bold" style={{ padding: '14px 20px', color: '#5682B1' }}>
+                        {attempt.score !== null ? `${attempt.score} / ${attempt.totalQuestions}` : '--'}
                       </td>
-                      <td className="px-5 py-4 text-white/30 text-xs">{formatDate(attempt.startedAt)}</td>
-                      <td className="px-5 py-4 text-white/30 text-xs">{formatDate(attempt.submittedAt)}</td>
-                      <td className="px-5 py-4">
+                      <td style={{ padding: '14px 20px', color: '#727780', fontSize: '13px' }}>{formatDate(attempt.startedAt)}</td>
+                      <td style={{ padding: '14px 20px', color: '#727780', fontSize: '13px' }}>{formatDate(attempt.submittedAt)}</td>
+                      <td style={{ padding: '14px 20px' }}>
                         {attempt.submittedAt ? (
-                          <span className={`text-[10px] uppercase tracking-widest font-mono px-2 py-0.5 border rounded-sm ${
-                            attempt.autoSubmitted ? 'border-white/15 text-white/30' : 'border-purple-400/25 text-purple-300/50'
-                          }`}>{attempt.autoSubmitted ? 'Auto' : 'Manual'}</span>
-                        ) : <span className="text-[10px] uppercase tracking-widest font-mono text-white/20">In Progress</span>}
+                          <span className="text-xs font-bold rounded-full"
+                                style={attempt.autoSubmitted
+                                  ? { backgroundColor: '#f3f3f3', color: '#727780', padding: '4px 12px', border: '1px solid #e2e2e2' }
+                                  : { backgroundColor: 'rgba(86,130,177,0.1)', color: '#5682B1', padding: '4px 12px', border: '1px solid rgba(86,130,177,0.2)' }
+                                }>{attempt.autoSubmitted ? 'Auto' : 'Manual'}</span>
+                        ) : <span className="text-xs" style={{ color: '#c2c7d0' }}>In Progress</span>}
                       </td>
                     </tr>
                   ))}
@@ -107,30 +117,27 @@ export default function ExamAttempts() {
             </div>
 
             {/* Mobile cards */}
-            <div className="sm:hidden space-y-2.5">
+            <div className="sm:hidden flex flex-col gap-2">
               {data.attempts.map((attempt) => (
-                <div key={attempt._id} className="border border-white/10 bg-white/[0.02] p-4 space-y-2.5 rounded-sm">
-                  <div className="flex items-center justify-between">
-                    <span className="font-medium text-white text-sm">{attempt.userName}</span>
-                    <span className="text-purple-300/50 text-sm font-mono">
-                      {attempt.score !== null ? `${attempt.score}/${attempt.totalQuestions}` : '—'}
+                <div key={attempt._id} className="rounded-2xl"
+                     style={{ backgroundColor: '#ffffff', border: '1px solid #e2e2e2', padding: '16px 20px' }}>
+                  <div className="flex items-center justify-between" style={{ marginBottom: '8px' }}>
+                    <span className="font-semibold text-sm" style={{ color: '#1b1b1b' }}>{attempt.userName}</span>
+                    <span className="text-sm font-bold" style={{ color: '#5682B1' }}>
+                      {attempt.score !== null ? `${attempt.score}/${attempt.totalQuestions}` : '--'}
                     </span>
                   </div>
-                  <div className="text-[10px] text-white/25 space-y-0.5 font-mono">
+                  <div className="text-xs" style={{ color: '#727780' }}>
                     <p>Started: {formatDate(attempt.startedAt)}</p>
                     <p>Submitted: {formatDate(attempt.submittedAt)}</p>
                   </div>
-                  {attempt.submittedAt && (
-                    <span className={`text-[10px] uppercase tracking-widest font-mono px-2 py-0.5 border inline-block rounded-sm ${
-                      attempt.autoSubmitted ? 'border-white/15 text-white/30' : 'border-purple-400/25 text-purple-300/50'
-                    }`}>{attempt.autoSubmitted ? 'Auto' : 'Manual'}</span>
-                  )}
                 </div>
               ))}
             </div>
           </>
         )}
+        </div>
       </main>
-    </PageLayout>
+    </div>
   );
 }

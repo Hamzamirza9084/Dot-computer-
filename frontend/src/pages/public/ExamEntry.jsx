@@ -50,101 +50,82 @@ export default function ExamEntry() {
   if (loading) {
     return (
       <PageLayout>
-        <div className="flex-1 flex items-center justify-center text-white/30 font-mono text-sm uppercase tracking-widest">
-          Loading...
-        </div>
+        <div className="flex-1 flex items-center justify-center text-white/30 text-sm font-medium">Loading...</div>
       </PageLayout>
     );
   }
 
   return (
-    <PageLayout>
-      {/* Top Navigation */}
-      <nav className="border-b border-white/10 bg-[#050505]/80 backdrop-blur-md">
-        <div className="max-w-6xl mx-auto px-6 sm:px-8 py-4 sm:py-5 flex items-center justify-between">
-          <Link to="/" className="font-bold text-lg sm:text-2xl tracking-tight text-white">
-            .computer Quiz
-          </Link>
-          <span className="text-white/30 text-[11px] sm:text-xs font-mono uppercase tracking-widest">
-            Assessment Entry
-          </span>
-        </div>
+    <div className="min-h-screen flex flex-col" style={{ backgroundColor: '#000000', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+      {/* Nav */}
+      <nav className="flex items-center justify-between" style={{ padding: '20px 24px', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+        <Link to="/" className="font-extrabold text-xl tracking-tight text-white">
+          .computer<span style={{ color: '#5682B1' }}>Quiz</span>
+        </Link>
+        <span className="text-sm font-medium" style={{ color: 'rgba(255,255,255,0.4)' }}>Assessment Entry</span>
       </nav>
 
-      {/* Main Content — properly centered */}
-      <main className="flex-1 flex items-center justify-center px-6 sm:px-8 py-10 sm:py-16">
-        <div className="w-full max-w-lg mx-auto">
+      {/* Center card */}
+      <main className="flex-1 flex items-center justify-center px-6">
+        <div className="w-full max-w-md">
           {error && (
-            <div className="flex items-center gap-3 p-4 mb-6 border border-red-500/20 bg-red-500/5 text-red-300/80 text-sm rounded-sm">
-              <AlertCircle size={16} className="shrink-0" />
-              <span>{error}</span>
+            <div className="flex items-center gap-3 rounded-xl" style={{ padding: '14px 16px', marginBottom: '20px', backgroundColor: 'rgba(186,26,26,0.08)', border: '1px solid rgba(186,26,26,0.2)', color: 'rgba(255,120,120,0.9)', fontSize: '14px' }}>
+              <AlertCircle size={16} className="shrink-0" /><span>{error}</span>
             </div>
           )}
 
           {exam && (
-            <>
-              {/* Exam Info */}
-              <div className="border border-white/10 bg-white/[0.02] backdrop-blur-sm p-6 sm:p-8 mb-6 sm:mb-8 rounded-sm text-center">
-                <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold tracking-tight mb-3 text-white">
-                  {exam.title}
-                </h1>
-                {exam.description && (
-                  <p className="text-white/40 text-xs sm:text-sm mb-5 sm:mb-6 leading-relaxed">{exam.description}</p>
-                )}
-                <div className="flex items-center justify-center gap-4 sm:gap-6 text-[11px] sm:text-xs text-purple-300/50 font-mono uppercase tracking-wider">
-                  <span className="flex items-center gap-1.5">
-                    <Clock size={12} />
-                    {exam.durationMinutes} minutes
-                  </span>
-                  <span className="flex items-center gap-1.5">
-                    <FileText size={12} />
-                    {exam.questionCount} question{exam.questionCount !== 1 ? 's' : ''}
-                  </span>
-                </div>
+            <div className="rounded-2xl text-center"
+                 style={{ backgroundColor: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', backdropFilter: 'blur(12px)', padding: '48px 40px' }}>
+              <h1 className="font-bold text-white" style={{ fontSize: '28px', lineHeight: '36px', marginBottom: '16px' }}>
+                {exam.title}
+              </h1>
+              <div className="flex items-center justify-center gap-6" style={{ marginBottom: '36px', color: 'rgba(255,255,255,0.4)', fontSize: '14px' }}>
+                <span className="flex items-center gap-1.5">
+                  <Clock size={14} />{exam.durationMinutes} minutes
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <FileText size={14} />{exam.questionCount} question{exam.questionCount !== 1 ? 's' : ''}
+                </span>
               </div>
 
-              {/* Name Entry Form */}
-              <form onSubmit={handleStart} className="space-y-4 sm:space-y-5" id="exam-entry-form">
-                <div>
-                  <label htmlFor="userName" className="block text-[11px] sm:text-xs font-mono text-white/40 mb-2 uppercase tracking-widest">
-                    Candidate Identifier
+              <form onSubmit={handleStart} id="exam-entry-form">
+                <div className="text-left" style={{ marginBottom: '24px' }}>
+                  <label htmlFor="userName" className="block font-semibold" style={{ color: 'rgba(255,255,255,0.6)', fontSize: '14px', marginBottom: '10px' }}>
+                    Your Name
                   </label>
                   <input
-                    type="text"
-                    id="userName"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    required
-                    autoFocus
-                    className="w-full px-4 py-3 bg-white/[0.03] border border-white/15 text-white placeholder-white/20 focus:outline-none focus:border-purple-400/50 focus:bg-white/[0.05] transition-all duration-200 rounded-sm"
+                    type="text" id="userName" value={name}
+                    onChange={(e) => setName(e.target.value)} required autoFocus
+                    className="w-full text-white text-sm focus:outline-none transition-all duration-300"
+                    style={{ backgroundColor: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: '12px', padding: '14px 18px' }}
+                    onFocus={(e) => { e.target.style.borderColor = 'rgba(86,130,177,0.5)'; e.target.style.backgroundColor = 'rgba(255,255,255,0.08)'; }}
+                    onBlur={(e) => { e.target.style.borderColor = 'rgba(255,255,255,0.12)'; e.target.style.backgroundColor = 'rgba(255,255,255,0.06)'; }}
                     placeholder="Enter your full name"
                   />
                 </div>
-
                 <button
-                  type="submit"
-                  disabled={starting || !name.trim()}
-                  className="w-full flex items-center justify-center gap-2 py-3 bg-gradient-to-r from-purple-600 to-purple-500 text-white font-mono font-semibold text-xs uppercase tracking-widest hover:from-purple-500 hover:to-purple-400 disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-200 rounded-sm"
+                  type="submit" disabled={starting || !name.trim()}
+                  className="w-full flex items-center justify-center gap-2.5 text-white text-sm font-semibold transition-all duration-300 disabled:opacity-40 disabled:cursor-not-allowed hover:-translate-y-0.5"
+                  style={{ backgroundColor: '#5682B1', borderRadius: '16px', padding: '16px' }}
+                  onMouseEnter={(e) => { if (!e.currentTarget.disabled) e.currentTarget.style.backgroundColor = '#739EC9'; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#5682B1'; }}
                   id="start-exam-btn"
                 >
                   {starting ? (
                     <span className="inline-block w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                   ) : (
-                    <>
-                      Begin Assessment
-                      <ArrowRight size={14} strokeWidth={2.5} />
-                    </>
+                    <>Begin Assessment <ArrowRight size={16} /></>
                   )}
                 </button>
               </form>
-
-              <p className="text-center text-white/15 text-[10px] sm:text-[11px] mt-8 sm:mt-10 font-mono uppercase tracking-widest">
-                Timer starts immediately upon entry
+              <p style={{ marginTop: '28px', color: 'rgba(255,255,255,0.2)', fontSize: '12px' }}>
+                The timer starts immediately upon entry
               </p>
-            </>
+            </div>
           )}
         </div>
       </main>
-    </PageLayout>
+    </div>
   );
 }
