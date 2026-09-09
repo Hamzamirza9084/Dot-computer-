@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { Clock, ArrowRight, BookOpen, Shield, Zap, Code, ListChecks } from 'lucide-react';
+import { Clock, ArrowRight, BookOpen, Shield, Zap, Code, ListChecks, Download, Smartphone, Sparkles, CheckCircle2 } from 'lucide-react';
 import api from '../../lib/axios';
 import PageLayout from '../../components/PageLayout';
 
@@ -64,18 +64,37 @@ export default function Home() {
                style={{ color: '#1b1b1b' }}
                onMouseEnter={(e) => { e.currentTarget.style.color = '#5682B1'; }}
                onMouseLeave={(e) => { e.currentTarget.style.color = '#1b1b1b'; }}>Features</a>
+            <a href="#download-app" className="text-sm font-semibold tracking-wide transition-colors duration-300 flex items-center gap-1.5"
+               style={{ color: '#1b1b1b' }}
+               onMouseEnter={(e) => { e.currentTarget.style.color = '#5682B1'; }}
+               onMouseLeave={(e) => { e.currentTarget.style.color = '#1b1b1b'; }}>
+              <Smartphone size={15} />
+              Mobile App
+            </a>
             <Link to="/admin/login" className="text-sm font-semibold tracking-wide transition-colors duration-300"
                style={{ color: '#1b1b1b' }}
                onMouseEnter={(e) => { e.currentTarget.style.color = '#5682B1'; }}
                onMouseLeave={(e) => { e.currentTarget.style.color = '#1b1b1b'; }}>Admin Portal</Link>
           </div>
-          <Link to="/admin/login"
-            className="hidden md:block text-sm font-semibold text-white transition-all duration-300 hover:-translate-y-0.5"
-            style={{ backgroundColor: '#5682B1', borderRadius: '16px', padding: '10px 24px' }}
-            onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#739EC9'; }}
-            onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#5682B1'; }}>
-            Get Started
-          </Link>
+          <div className="hidden sm:flex items-center gap-3">
+            <a
+              href="/ionyou-app.apk"
+              download="ionyou-app.apk"
+              className="text-xs font-bold flex items-center gap-1.5 transition-all duration-300 hover:-translate-y-0.5"
+              style={{ backgroundColor: 'rgba(86,130,177,0.15)', color: '#5682B1', border: '1px solid rgba(86,130,177,0.3)', borderRadius: '14px', padding: '10px 18px' }}
+              title="Download ionyou-app.apk"
+            >
+              <Download size={14} />
+              Download APK
+            </a>
+            <Link to="/admin/login"
+              className="text-sm font-semibold text-white transition-all duration-300 hover:-translate-y-0.5"
+              style={{ backgroundColor: '#5682B1', borderRadius: '16px', padding: '10px 24px' }}
+              onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#739EC9'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#5682B1'; }}>
+              Get Started
+            </Link>
+          </div>
         </div>
       </nav>
 
@@ -170,6 +189,59 @@ export default function Home() {
                 </div>
               );
             })}
+          </div>
+        </div>
+      </section>
+
+      
+      {/* ==============================
+          MOBILE APP DOWNLOAD SECTION
+          ============================== */}
+      <section id="download-app" className="scroll-mt-20"
+               style={{ backgroundColor: '#141414', borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: '80px', paddingBottom: '80px' }}>
+        <div className="mx-auto" style={{ maxWidth: '1280px', paddingLeft: '32px', paddingRight: '32px' }}>
+          <div className="rounded-3xl p-8 sm:p-12 relative overflow-hidden"
+               style={{ background: 'linear-gradient(135deg, rgba(86,130,177,0.12), rgba(255,255,255,0.03))', border: '1px solid rgba(86,130,177,0.25)', backdropFilter: 'blur(16px)' }}>
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+              <div className="lg:col-span-8">
+                <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-4"
+                     style={{ backgroundColor: 'rgba(86,130,177,0.18)', color: '#5682B1' }}>
+                  <Smartphone size={13} />
+                  Android Application
+                </div>
+                <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight mb-4">
+                  Download the <span style={{ color: '#5682B1' }}>IOnYou</span> Attendance App
+                </h2>
+                <p className="text-gray-300 text-base leading-relaxed mb-6 max-w-2xl">
+                  Complete Campus Attendance Solution for Faculty and Students. Includes real-time FaceNet AI recognition, 3-hour RFID wall badge verification, and personal lecture history.
+                </p>
+                <div className="flex flex-wrap gap-4 items-center">
+                  <a
+                    href="/ionyou-app.apk"
+                    download="ionyou-app.apk"
+                    className="inline-flex items-center gap-2.5 font-bold text-white text-sm transition-all duration-300 hover:-translate-y-0.5 shadow-lg"
+                    style={{ backgroundColor: '#5682B1', borderRadius: '16px', padding: '14px 28px' }}
+                  >
+                    <Download size={18} />
+                    Download APK Directly
+                  </a>
+                  <Link
+                    to="/download"
+                    className="inline-flex items-center gap-2 text-sm font-semibold transition-colors duration-300"
+                    style={{ color: '#e2e2e2', padding: '14px 20px' }}
+                  >
+                    Installation Guide & Details
+                    <ArrowRight size={16} />
+                  </Link>
+                </div>
+              </div>
+              <div className="lg:col-span-4 flex flex-col justify-center items-start lg:items-end gap-3 text-xs text-gray-400 font-medium border-t lg:border-t-0 lg:border-l pt-6 lg:pt-0 lg:pl-8" style={{ borderColor: 'rgba(255,255,255,0.08)' }}>
+                <span className="flex items-center gap-2 text-white/80"><CheckCircle2 size={16} className="text-green-500 shrink-0" /> Package: ionyou-app.apk</span>
+                <span className="flex items-center gap-2 text-white/80"><CheckCircle2 size={16} className="text-green-500 shrink-0" /> Android 8.0 or higher</span>
+                <span className="flex items-center gap-2 text-white/80"><CheckCircle2 size={16} className="text-green-500 shrink-0" /> Direct Sideload / No Play Store Needed</span>
+                <span className="flex items-center gap-2 text-white/80"><CheckCircle2 size={16} className="text-green-500 shrink-0" /> Free & Open Campus Access</span>
+              </div>
+            </div>
           </div>
         </div>
       </section>

@@ -6,6 +6,7 @@ import Home from './pages/public/Home';
 import ExamEntry from './pages/public/ExamEntry';
 import TakeExam from './pages/public/TakeExam';
 import ExamResults from './pages/public/ExamResults';
+import DownloadApp from './pages/public/DownloadApp';
 
 // Admin pages
 import AdminLogin from './pages/admin/AdminLogin';
@@ -18,6 +19,7 @@ export default function App() {
     <Routes>
       {/* Public routes */}
       <Route path="/" element={<Home />} />
+      <Route path="/download" element={<DownloadApp />} />
       <Route path="/exam/:id/enter" element={<ExamEntry />} />
       <Route path="/exam/:id/take" element={<TakeExam />} />
       <Route path="/exam/:id/results" element={<ExamResults />} />
